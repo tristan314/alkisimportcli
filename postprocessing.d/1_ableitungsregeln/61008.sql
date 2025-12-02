@@ -38,6 +38,6 @@ SELECT
 	drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_hoehenlinie o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='HHL' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='HHL' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='HHL' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='HHL' AND d.endet IS NULL
 WHERE o.endet IS NULL AND NOT hoehevonhoehenlinie IS NULL;

@@ -58,8 +58,8 @@ SELECT
 	t.drehwinkel, t.horizontaleausrichtung, t.vertikaleausrichtung, t.skalierung, t.fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_flurstueck o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='ZAE_NEN' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='ZAE_NEN' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='ZAE_NEN' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='ZAE_NEN' AND d.endet IS NULL
 WHERE o.endet IS NULL AND (
 	CASE
 	WHEN :alkis_fnbruch
@@ -107,8 +107,8 @@ FROM (
 			t.drehwinkel, t.horizontaleausrichtung, 'Basis'::text AS vertikaleausrichtung, t.skalierung, t.fontsperrung,
 			coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 		FROM ax_flurstueck o
-		LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL
-		LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.endet IS NULL
+		LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL
+		LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.endet IS NULL
 		WHERE o.endet IS NULL AND
 			CASE
 			WHEN :alkis_fnbruch
@@ -157,8 +157,8 @@ FROM (
 			t.drehwinkel, t.horizontaleausrichtung, 'oben'::text AS vertikaleausrichtung, t.skalierung, t.fontsperrung,
 			coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 		FROM ax_flurstueck o
-		LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL
-		LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.endet IS NULL
+		LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL
+		LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.endet IS NULL
 		WHERE o.endet IS NULL AND
 			CASE
 			WHEN :alkis_fnbruch
@@ -204,8 +204,8 @@ FROM (
 			coalesce(t.drehwinkel,0) AS drehwinkel,
 			t.horizontaleausrichtung
 		FROM ax_flurstueck o
-		LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL
-		LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.endet IS NULL
+		LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL
+		LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.endet IS NULL
 		WHERE o.endet IS NULL AND
 			CASE
 			WHEN :alkis_fnbruch
@@ -227,7 +227,7 @@ SELECT
 	CASE WHEN o.abweichenderrechtszustand='true' THEN 2005 ELSE 2004 END AS signaturnummer,
 	coalesce(l.advstandardmodell||l.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_flurstueck o
-JOIN ap_lpo l ON ARRAY[o.gml_id] <@ l.dientzurdarstellungvon AND l.endet IS NULL
+JOIN ap_lpo l ON o.gml_id = ANY(l.dientzurdarstellungvon) AND l.endet IS NULL
   -- AND l.art='Pfeil' -- art in RP nicht immer gesetzt
 WHERE o.endet IS NULL;
 
@@ -243,5 +243,5 @@ SELECT
 	CASE WHEN o.abweichenderrechtszustand='true' THEN 3011 ELSE 3010 END AS signaturnummer,
 	coalesce(p.advstandardmodell||p.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_flurstueck o
-JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='Haken' AND p.endet IS NULL
+JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='Haken' AND p.endet IS NULL
 WHERE o.endet IS NULL;

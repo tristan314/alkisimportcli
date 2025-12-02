@@ -64,9 +64,9 @@ FROM (
 			o.advstandardmodell||o.sonstigesmodell
 		) AS modell
 	FROM ax_bahnverkehrsanlage o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='BFK' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_pto n ON ARRAY[o.gml_id] <@ n.dientzurdarstellungvon AND n.art='NAM' AND n.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art IN ('BFK','NAM') AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='BFK' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_pto n ON o.gml_id = ANY(n.dientzurdarstellungvon) AND n.art='NAM' AND n.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art IN ('BFK','NAM') AND d.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS n WHERE NOT text IS NULL;
 
@@ -127,8 +127,8 @@ FROM (
 		) AS signaturnummer,
 		coalesce(p.advstandardmodell||p.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_bahnverkehrsanlage o
-	LEFT OUTER JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='BKT' AND p.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='BKT' AND d.endet IS NULL
+	LEFT OUTER JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='BKT' AND p.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='BKT' AND d.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS o
 WHERE NOT signaturnummer IS NULL;

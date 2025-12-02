@@ -33,7 +33,7 @@ SELECT alkis_dropobject('ax_ausfuehrendestellen');
 SELECT alkis_dropobject('v_eigentuemer');
 SELECT alkis_dropobject('v_haeuser');
 
-\i nas2alb-functions.sql
+\ir ../nas2alb-functions.sql
 
 SELECT alkis_dropobject('flurst');
 CREATE TABLE flurst (
@@ -513,7 +513,7 @@ CREATE VIEW v_haeuser AS
       to_char(alkis_toint(o.land),'fm00')||o.regierungsbezirk||to_char(alkis_toint(o.kreis),'fm00')||to_char(alkis_toint(o.gemeinde),'fm000')||'    '||trim(o.lage) AS strshl,
       hausnummer AS ha_nr
     FROM ax_lagebezeichnungmithausnummer o
-    JOIN ax_gebaeude g ON ARRAY[o.gml_id] <@ g.zeigtauf AND g.endet IS NULL
+    JOIN ax_gebaeude g ON o.gml_id = ANY(g.zeigtauf) AND g.endet IS NULL
     WHERE o.endet IS NULL
   ) AS foo
   LEFT OUTER JOIN str_shl USING (strshl)

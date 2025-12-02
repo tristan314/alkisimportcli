@@ -142,8 +142,8 @@ FROM (
 	FROM ax_gebaeude
 	WHERE endet IS NULL
 ) AS o
-LEFT OUTER JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='GFK' AND p.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='GFK' AND d.endet IS NULL
+LEFT OUTER JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='GFK' AND p.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='GFK' AND d.endet IS NULL
 WHERE NOT o.signaturnummer IS NULL;
 
 -- Gebäudebeschriftungen
@@ -199,9 +199,9 @@ FROM (
 		FROM ax_gebaeude
 		WHERE endet IS NULL
 	) AS o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='GFK' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_pto n ON ARRAY[o.gml_id] <@ n.dientzurdarstellungvon AND n.art='NAM' AND n.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art IN ('GFK','NAM') AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='GFK' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_pto n ON o.gml_id = ANY(n.dientzurdarstellungvon) AND n.art='NAM' AND n.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art IN ('GFK','NAM') AND d.endet IS NULL
 ) AS o
 WHERE NOT text IS NULL;
 
@@ -253,8 +253,8 @@ FROM (
 		WHERE NOT weiteregebaeudefunktion IS NULL AND endet IS NULL
 	) AS o
 ) AS o
-LEFT OUTER JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='GFK' AND p.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='GFK' AND d.endet IS NULL
+LEFT OUTER JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='GFK' AND p.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='GFK' AND d.endet IS NULL
 WHERE NOT o.signaturnummer IS NULL;
 
 -- Weitere Gebäudefunktionsbeschriftungen
@@ -295,9 +295,9 @@ FROM (
 		FROM ax_gebaeude o
 		WHERE endet IS NULL
 	) AS o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='GFK' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_pto n ON ARRAY[o.gml_id] <@ n.dientzurdarstellungvon AND n.art='NAM' AND n.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art IN ('NAM','GFK') AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='GFK' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_pto n ON o.gml_id = ANY(n.dientzurdarstellungvon) AND n.art='NAM' AND n.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art IN ('NAM','GFK') AND d.endet IS NULL
 	WHERE NOT gebaeudefunktion IS NULL
 ) AS o
 WHERE NOT text IS NULL;
@@ -316,7 +316,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gebaeude o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='ZAE_NEN' AND (t.signaturnummer IS NULL OR t.signaturnummer IN ('4122','4123')) AND t.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='ZAE_NEN' AND (t.signaturnummer IS NULL OR t.signaturnummer IN ('4122','4123')) AND t.endet IS NULL
 WHERE NOT name IS NULL AND o.endet IS NULL;
 */
 
@@ -336,8 +336,8 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gebaeude o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='AOG_AUG' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='AOG_AUG' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='AOG_AUG' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='AOG_AUG' AND d.endet IS NULL
 WHERE (NOT anzahlderoberirdischengeschosse IS NULL OR NOT anzahlderunterirdischengeschosse IS NULL) AND o.endet IS NULL;
 
 -- Dachform
@@ -368,8 +368,8 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gebaeude o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='DAF' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='DAF' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='DAF' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='DAF' AND d.endet IS NULL
 WHERE NOT dachform IS NULL AND o.endet IS NULL;
 
 -- Gebäudezustände
@@ -391,6 +391,6 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(o.advstandardmodell||o.sonstigesmodell,t.advstandardmodell||t.sonstigesmodell) AS modell
 FROM ax_gebaeude o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='ZUS' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='ZUS' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='ZUS' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='ZUS' AND d.endet IS NULL
 WHERE zustand IN (2200,2300,3000,4000) AND o.endet IS NULL;

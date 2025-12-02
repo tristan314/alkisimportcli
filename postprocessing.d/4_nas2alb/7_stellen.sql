@@ -26,7 +26,7 @@ BEGIN
 	CREATE TABLE v_schutzgebietnachwasserrecht AS
 		SELECT nextval('a') AS ogc_fid,z.gml_id,'ax_schutzzone'::varchar AS name,s.land,s.stelle,z.wkb_geometry,NULL::text AS endet, hatdirektunten
 		FROM ax_schutzgebietnachwasserrecht s
-		JOIN ax_schutzzone z ON ARRAY[s.gml_id] <@ z.istteilvon AND z.endet IS NULL
+		JOIN ax_schutzzone z ON s.gml_id = ANY(z.istteilvon) AND z.endet IS NULL
 		WHERE s.endet IS NULL;
 	CREATE INDEX v_schutzgebietnachwasserrecht_wkb_geometry_idx ON v_schutzgebietnachwasserrecht USING gist(wkb_geometry);
 
@@ -37,7 +37,7 @@ BEGIN
 	CREATE TABLE v_schutzgebietnachnaturumweltoderbodenschutzrecht AS
 		SELECT nextval('a') AS ogc_fid,z.gml_id,'ax_schutzzone'::varchar AS name,s.land,s.stelle,z.wkb_geometry,NULL::text AS endet, hatdirektunten
 		FROM ax_schutzgebietnachnaturumweltoderbodenschutzrecht s
-		JOIN ax_schutzzone z ON ARRAY[s.gml_id] <@ z.istteilvon AND z.endet IS NULL
+		JOIN ax_schutzzone z ON s.gml_id = ANY(z.istteilvon) AND z.endet IS NULL
 		WHERE s.endet IS NULL;
 	CREATE INDEX v_schutzgebietnachnuobr_wkb_geometry_idx ON v_schutzgebietnachnaturumweltoderbodenschutzrecht USING gist(wkb_geometry);
 

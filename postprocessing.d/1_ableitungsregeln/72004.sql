@@ -29,5 +29,5 @@ SELECT
 	drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_bewertung o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='KLA' AND t.endet IS NULL AND t.schriftinhalt IS NOT NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='KLA' AND t.endet IS NULL AND t.schriftinhalt IS NOT NULL
 WHERE o.gml_id LIKE 'DERP%' AND o.endet IS NULL;

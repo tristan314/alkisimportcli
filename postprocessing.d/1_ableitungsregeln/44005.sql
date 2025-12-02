@@ -30,8 +30,8 @@ SELECT
 	coalesce(d.signaturnummer,p.signaturnummer,'3490') AS signaturnummer,
 	coalesce(p.advstandardmodell||p.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_hafenbecken o
-LEFT OUTER JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='FKT' AND p.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='FKT' AND d.endet IS NULL
+LEFT OUTER JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='FKT' AND p.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='FKT' AND d.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- Hafenbecken, Namen
@@ -57,8 +57,8 @@ FROM (
 		drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_hafenbecken o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='NAM' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='NAM' AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='NAM' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='NAM' AND d.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS n
 WHERE text IS NOT NULL;

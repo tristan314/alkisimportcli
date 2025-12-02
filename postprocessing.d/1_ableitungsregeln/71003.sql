@@ -26,7 +26,7 @@ FROM (
 		drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_klassifizierungnachwasserrecht o
-	JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL
+	JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS o
 WHERE NOT text IS NULL;

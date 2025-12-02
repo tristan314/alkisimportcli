@@ -48,12 +48,12 @@ BEGIN
 		n := n + 1;
 		-- RAISE NOTICE 'gml_id:% %', r0.gml_id, n;
 
-		SELECT st_linemerge(st_collect(wkb_geometry)) INTO uk FROM ax_gelaendekante WHERE ARRAY[r0.gml_id] <@ istteilvon AND artdergelaendekante=1230 AND endet IS NULL;
+		SELECT st_linemerge(st_collect(wkb_geometry)) INTO uk FROM ax_gelaendekante WHERE r0.gml_id = ANY(istteilvon) AND artdergelaendekante=1230 AND endet IS NULL;
 
 		-- RAISE NOTICE 'Unterkante:%', st_astext(uk);
 
 		-- Alle Kanten sind Schnittkanten
-		SELECT st_union(wkb_geometry) INTO sk FROM ax_gelaendekante WHERE ARRAY[r0.gml_id] <@ istteilvon AND endet IS NULL;
+		SELECT st_union(wkb_geometry) INTO sk FROM ax_gelaendekante WHERE r0.gml_id = ANY(istteilvon) AND endet IS NULL;
 		IF sk IS NULL THEN
 			kskn := kskn + 1;
 			-- RAISE NOTICE '%: Keine Schnittkante', r0.gml_id;
@@ -66,7 +66,7 @@ BEGIN
 		FOR r1 IN
 			SELECT (st_dump(st_multi(st_linemerge(st_collect(wkb_geometry))))).geom
 			FROM ax_gelaendekante
-			WHERE ARRAY[r0.gml_id] <@ istteilvon
+			WHERE r0.gml_id = ANY(istteilvon)
 			  AND artdergelaendekante=1220
 			  AND endet IS NULL
 		LOOP

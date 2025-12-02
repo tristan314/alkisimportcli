@@ -27,7 +27,7 @@ INSERT INTO str_shl(strshl,strname,gemshl)
 			unverschluesselt AS strname,
 			to_char(alkis_toint(f.gemeindezugehoerigkeit_land),'fm00')||f.gemeindezugehoerigkeit_regierungsbezirk||to_char(alkis_toint(f.gemeindezugehoerigkeit_kreis),'fm00')||to_char(alkis_toint(f.gemeindezugehoerigkeit_gemeinde),'fm000') AS gemshl
 		FROM ax_lagebezeichnungmithausnummer l
-		JOIN ax_flurstueck f ON ARRAY[l.gml_id] <@ f.weistauf AND f.endet IS NULL
+		JOIN ax_flurstueck f ON l.gml_id = ANY(f.weistauf) AND f.endet IS NULL
 		WHERE l.lage IS NULL AND l.unverschluesselt IS NOT NULL AND l.endet IS NULL
 	) AS a
 	WHERE gemshl IS NOT NULL AND NOT EXISTS(SELECT * FROM str_shl b WHERE a.gemshl=b.gemshl AND a.strname=b.strname);
@@ -45,7 +45,7 @@ INSERT INTO strassen(flsnr,pk,strshl,hausnr,ff_entst,ff_stand)
 		0 AS ff_entst,
 		0 AS ff_stand
 	FROM ax_lagebezeichnungmithausnummer l
-	JOIN ax_flurstueck f ON ARRAY[l.gml_id] <@ f.weistauf AND f.endet IS NULL
+	JOIN ax_flurstueck f ON l.gml_id = ANY(f.weistauf) AND f.endet IS NULL
 	WHERE l.lage IS NOT NULL AND l.endet IS NULL;
 
 INSERT INTO strassen(flsnr,pk,strshl,hausnr,ff_entst,ff_stand)
@@ -57,7 +57,7 @@ INSERT INTO strassen(flsnr,pk,strshl,hausnr,ff_entst,ff_stand)
 		0 AS ff_entst,
 		0 AS ff_stand
 	FROM ax_lagebezeichnungmithausnummer l
-	JOIN ax_flurstueck f ON ARRAY[l.gml_id] <@ f.weistauf AND f.endet IS NULL
+	JOIN ax_flurstueck f ON l.gml_id = ANY(f.weistauf) AND f.endet IS NULL
 	WHERE l.lage IS NULL AND l.endet IS NULL AND l.unverschluesselt IS NOT NULL;
 
 INSERT INTO strassen(flsnr,pk,strshl,hausnr,ff_entst,ff_stand)
@@ -69,5 +69,5 @@ INSERT INTO strassen(flsnr,pk,strshl,hausnr,ff_entst,ff_stand)
 		0 AS ff_entst,
 		0 AS ff_stand
 	FROM ax_lagebezeichnungohnehausnummer l
-	JOIN ax_flurstueck f ON ARRAY[l.gml_id] <@ f.zeigtauf AND f.endet IS NULL
+	JOIN ax_flurstueck f ON l.gml_id = ANY(f.zeigtauf) AND f.endet IS NULL
 	WHERE NOT l.lage IS NULL AND l.endet IS NULL;

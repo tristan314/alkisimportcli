@@ -20,7 +20,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungmithausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL AND t.art='Ort'
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL AND t.art='Ort'
 WHERE coalesce(schriftinhalt,'')<>'' AND o.endet IS NULL;
 
 ANALYZE ax_lagebezeichnungmithausnummer;
@@ -43,7 +43,7 @@ INSERT INTO po_zeigtauf_hausnummer
 		SELECT
 			unnest(zeigtauf) AS zeigtauf, wkb_geometry, '' AS prefix
 		FROM ax_turm z
-		JOIN ax_lagebezeichnungmithausnummer lmh ON ARRAY[lmh.gml_id] <@ z.zeigtAuf AND lmh.endet IS NULL
+		JOIN ax_lagebezeichnungmithausnummer lmh ON lmh.gml_id = ANY(z.zeigtAuf) AND lmh.endet IS NULL
 		WHERE z.endet IS NULL
 	) AS z;
 
@@ -56,7 +56,7 @@ INSERT INTO po_zeigtauf_hausnummer
 		SELECT
 			unnest(zeigtauf) AS zeigtauf, wkb_geometry, '' AS prefix
 		FROM ax_gebaeude z
-		JOIN ax_lagebezeichnungmithausnummer lmh ON ARRAY[lmh.gml_id] <@ z.zeigtAuf AND lmh.endet IS NULL
+		JOIN ax_lagebezeichnungmithausnummer lmh ON lmh.gml_id = ANY(z.zeigtAuf) AND lmh.endet IS NULL
 		WHERE z.endet IS NULL
 	) AS z
 	WHERE NOT EXISTS (SELECT h.zeigtauf FROM po_zeigtauf_hausnummer h WHERE h.zeigtauf=z.zeigtauf);
@@ -70,7 +70,7 @@ INSERT INTO po_zeigtauf_hausnummer
 		SELECT
 			unnest(zeigtauf) AS zeigtauf, wkb_geometry, 'HsNr. ' AS prefix
 		FROM ax_flurstueck z
-		JOIN ax_lagebezeichnungmithausnummer lmh ON ARRAY[lmh.gml_id] <@ z.zeigtAuf AND lmh.endet IS NULL
+		JOIN ax_lagebezeichnungmithausnummer lmh ON lmh.gml_id = ANY(z.zeigtAuf) AND lmh.endet IS NULL
 		WHERE z.endet IS NULL
 	) AS z
 	WHERE NOT EXISTS (SELECT h.zeigtauf FROM po_zeigtauf_hausnummer h WHERE h.zeigtauf=z.zeigtauf);
@@ -97,8 +97,8 @@ FROM (
 		coalesce(tx.advstandardmodell||tx.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_lagebezeichnungmithausnummer o
 	LEFT OUTER JOIN po_zeigtauf_hausnummer gt ON o.gml_id=gt.zeigtauf
-	LEFT OUTER JOIN ap_pto tx ON ARRAY[o.gml_id] <@ tx.dientzurdarstellungvon AND tx.endet IS NULL AND tx.art='HNR'
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.endet IS NULL AND d.art='HNR'
+	LEFT OUTER JOIN ap_pto tx ON o.gml_id = ANY(tx.dientzurdarstellungvon) AND tx.endet IS NULL AND tx.art='HNR'
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.endet IS NULL AND d.art='HNR'
 	WHERE o.endet IS NULL
 ) AS foo
 WHERE text IS NOT NULL;

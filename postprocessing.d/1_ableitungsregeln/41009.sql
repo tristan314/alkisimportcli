@@ -41,9 +41,9 @@ FROM (
 			o.advstandardmodell||o.sonstigesmodell
 		) AS modell
 	FROM ax_friedhof o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='Friedhof' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_pto n ON ARRAY[o.gml_id] <@ n.dientzurdarstellungvon AND n.art='NAM' AND n.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art IN ('NAM','Friedhof') AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='Friedhof' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_pto n ON o.gml_id = ANY(n.dientzurdarstellungvon) AND n.art='NAM' AND n.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art IN ('NAM','Friedhof') AND d.endet IS NULL
 	WHERE name IS NULL AND n.schriftinhalt IS NULL AND o.endet IS NULL
 ) AS n WHERE NOT text IS NULL;
 
@@ -66,7 +66,7 @@ FROM (
 		drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_friedhof o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='NAM' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='NAM' AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='NAM' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='NAM' AND d.endet IS NULL
 	WHERE NOT name IS NULL OR NOT t.schriftinhalt IS NULL AND o.endet IS NULL
 ) AS n;

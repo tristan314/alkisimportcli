@@ -1,0 +1,23 @@
+# Database connection
+PG:dbname=ALKIS_Eigentuemer user=data password=data host=localhost
+
+# Schema to use
+schema th
+
+# Coordinate system (EPSG code - adjust for your region)
+epsg 25833
+
+# Initialize schema (creates tables, views including v_eigentuemer)
+create
+
+# Source data files (add one per line, no quotes)
+/Users/tristan/alkisimport/data/th_bess/nas.xml
+
+# Optional: Use parallel processing (adjust based on system)
+jobs 4
+
+# Optional: Skip import failures (recommended for data quality issues)
+#skipfailures
+
+# Optional: Enable verbose logging
+debug

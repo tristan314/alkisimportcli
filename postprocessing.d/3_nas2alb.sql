@@ -19,7 +19,7 @@ SET application_name='ALKIS-Import - Liegenschaftsbuchübernahme';
 SET client_min_messages TO notice;
 \set ON_ERROR_STOP
 
-\i nas2alb-functions.sql
+\ir ../nas2alb-functions.sql
 
 SET search_path = :"alkis_schema", :"parent_schema", :"postgis_schema", public;
 

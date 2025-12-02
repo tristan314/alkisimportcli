@@ -16,7 +16,7 @@ INSERT INTO flurst(flsnr,flsnrk,gemashl,flr,entst,fortf,flsfl,amtlflsfl,gemflsfl
      alkis_flsnrk(a) AS flsnrk,
      to_char(alkis_toint(a.land),'fm00') || to_char(alkis_toint(a.gemarkungsnummer),'fm0000') AS gemashl,
      to_char(coalesce(a.flurnummer,0),'fm000') AS flr,
-     to_char(date_part('year', a.zeitpunktderentstehung), 'fm0000') || '/     -  ' AS entst,
+     to_char(date_part('year', a.zeitpunktderentstehung::timestamp), 'fm0000') || '/     -  ' AS entst,
      NULL AS fortf,
      amtlicheflaeche::int AS flsfl,
      amtlicheflaeche AS amtlflsfl,

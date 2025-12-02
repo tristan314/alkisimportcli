@@ -19,7 +19,7 @@ SELECT
 	t.drehwinkel, t.horizontaleausrichtung, t.vertikaleausrichtung, t.skalierung, t.fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gemarkungsteilflur o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='BEZ' AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='BEZ' AND t.endet IS NULL
 WHERE coalesce(t.schriftinhalt,'')<>'Flur 0' AND o.endet IS NULL;
 
 -- Gemarkungsnamen (RP)
@@ -34,7 +34,7 @@ SELECT
 	t.drehwinkel, t.horizontaleausrichtung, t.vertikaleausrichtung, t.skalierung, t.fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gemarkung o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='BEZ' AND t.endet IS NULL AND schriftinhalt IS NOT NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='BEZ' AND t.endet IS NULL AND schriftinhalt IS NOT NULL
 WHERE o.endet IS NULL AND o.gml_id LIKE 'DERP%';
 
 -- Gemarkungsnamen (RP)
@@ -49,7 +49,7 @@ SELECT
 	t.drehwinkel, t.horizontaleausrichtung, t.vertikaleausrichtung, t.skalierung, t.fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_gemeinde o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='BEZ' AND t.endet IS NULL AND schriftinhalt IS NOT NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='BEZ' AND t.endet IS NULL AND schriftinhalt IS NOT NULL
 WHERE o.endet IS NULL AND o.gml_id LIKE 'DERP%';
 
 -- Lagebezeichnung Ortsteil
@@ -64,7 +64,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='Ort' AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='Ort' AND t.endet IS NULL
 WHERE coalesce(schriftinhalt,'')<>'' AND o.endet IS NULL;
 
 -- Lagebezeichnungen
@@ -86,7 +86,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='Gewanne' AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='Gewanne' AND t.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- Straße/Weg
@@ -106,7 +106,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Strasse','Weg') AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Strasse','Weg') AND t.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- Platz/Bahnverkehr
@@ -126,7 +126,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Platz','Bahnverkehr') AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Platz','Bahnverkehr') AND t.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- Fließgewässer/Stehendes Gewässer
@@ -146,7 +146,7 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Fliessgewaesser','StehendesGewaesser') AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Fliessgewaesser','StehendesGewaesser') AND t.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- ohne Hausnummer auf Linie
@@ -167,7 +167,7 @@ SELECT
 	horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_lto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Strasse','Weg') AND t.endet IS NULL AND coalesce(t.signaturnummer,'')<>'6000'
+JOIN ap_lto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Strasse','Weg') AND t.endet IS NULL AND coalesce(t.signaturnummer,'')<>'6000'
 WHERE o.endet IS NULL;
 
 -- Platz/Bahnverkehr, Text auf Linien
@@ -187,7 +187,7 @@ SELECT
 	horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_lto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Platz','Bahnverkehr') AND t.endet IS NULL AND coalesce(t.signaturnummer,'')<>'6000'
+JOIN ap_lto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Platz','Bahnverkehr') AND t.endet IS NULL AND coalesce(t.signaturnummer,'')<>'6000'
 WHERE o.endet IS NULL;
 
 -- Fließgewässer/Stehendes Gewässer, Text auf Linien
@@ -207,5 +207,5 @@ SELECT
 	horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_lagebezeichnungohnehausnummer o
-JOIN ap_lto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art IN ('Fliessgewaesser','StehendesGewaesser') AND t.endet IS NULL
+JOIN ap_lto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art IN ('Fliessgewaesser','StehendesGewaesser') AND t.endet IS NULL
 WHERE o.endet IS NULL;

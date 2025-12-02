@@ -16,7 +16,7 @@ SELECT
 	1703 AS signaturnummer,
 	o.advstandardmodell||o.sonstigesmodell
 FROM ax_schutzgebietnachnaturumweltoderbodenschutzrecht o
-JOIN ax_schutzzone z ON ARRAY[o.gml_id] <@ z.istteilvon AND z.endet IS NULL
+JOIN ax_schutzzone z ON o.gml_id = ANY(z.istteilvon) AND z.endet IS NULL
 WHERE o.artderfestlegung=1621 AND o.endet IS NULL;
 
 INSERT INTO po_labels(gml_id,thema,layer,point,text,signaturnummer,drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,modell)
@@ -38,8 +38,8 @@ FROM (
 		drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_schutzgebietnachnaturumweltoderbodenschutzrecht o
-	LEFT OUTER JOIN ax_schutzzone z ON ARRAY[o.gml_id] <@ z.istteilvon AND z.endet IS NULL
-	JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='ADF' AND t.endet IS NULL
+	LEFT OUTER JOIN ax_schutzzone z ON o.gml_id = ANY(z.istteilvon) AND z.endet IS NULL
+	JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='ADF' AND t.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS o
 WHERE NOT text IS NULL;
@@ -64,8 +64,8 @@ FROM (
 		drehwinkel,horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_schutzgebietnachnaturumweltoderbodenschutzrecht o
-	LEFT OUTER JOIN ax_schutzzone z ON ARRAY[o.gml_id] <@ z.istteilvon AND z.endet IS NULL
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='NAM' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='NAM' AND d.endet IS NULL
+	LEFT OUTER JOIN ax_schutzzone z ON o.gml_id = ANY(z.istteilvon) AND z.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='NAM' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='NAM' AND d.endet IS NULL
 	WHERE o.endet IS NULL AND NOT name IS NULL
 ) AS n WHERE NOT text IS NULL;

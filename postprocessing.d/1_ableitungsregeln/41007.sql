@@ -38,8 +38,8 @@ FROM (
 		drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_flaechebesondererfunktionalerpraegung o
-	LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='NAM' AND t.endet IS NULL
-	LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='NAM' AND d.endet IS NULL
+	LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='NAM' AND t.endet IS NULL
+	LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='NAM' AND d.endet IS NULL
 	WHERE o.endet IS NULL
 ) AS o
 WHERE NOT text IS NULL;
@@ -66,6 +66,6 @@ FROM (
 		drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 		coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 	FROM ax_industrieundgewerbeflaeche o
-	JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='FKT' AND t.endet IS NULL
+	JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='FKT' AND t.endet IS NULL
 	WHERE o.endet IS NULL AND funktion=1300 AND o.gml_id LIKE 'DERP%'
 ) AS i WHERE NOT text IS NULL;

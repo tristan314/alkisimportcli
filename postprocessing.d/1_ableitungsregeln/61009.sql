@@ -17,7 +17,7 @@ SELECT
 	3629 AS signaturnummer,
 	coalesce(p.advstandardmodell||p.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_besonderertopographischerpunkt o
-JOIN ax_punktortau p ON ARRAY[o.gml_id] <@ p.istteilvon AND p.endet IS NULL
+JOIN ax_punktortau p ON o.gml_id = ANY(p.istteilvon) AND p.endet IS NULL
 WHERE o.endet IS NULL;
 
 -- Text
@@ -34,5 +34,5 @@ SELECT
 	horizontaleausrichtung,vertikaleausrichtung,skalierung,fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_besonderertopographischerpunkt o
-JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='UPO' AND t.endet IS NULL
+JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='UPO' AND t.endet IS NULL
 WHERE o.endet IS NULL;

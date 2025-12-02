@@ -186,7 +186,7 @@ UPDATE po_labels
 	FROM ap_pto t
 	WHERE po_labels.gml_id LIKE 'DERP%'
 		AND layer='ax_flurstueck_nummer'
-		AND ARRAY[po_labels.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL AND t.art IS NULL;
+		AND po_labels.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL AND t.art IS NULL;
 
 UPDATE po_lines
 	SET
@@ -195,7 +195,7 @@ UPDATE po_lines
 	FROM ap_pto t
 	WHERE po_lines.gml_id LIKE 'DERP%'
 	  AND layer='ax_flurstueck_nummer'
-	  AND ARRAY[po_lines.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL AND t.art IS NULL;
+	  AND po_lines.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL AND t.art IS NULL;
 
 SELECT 'Lösche nicht darzustellende Signaturen...';
 

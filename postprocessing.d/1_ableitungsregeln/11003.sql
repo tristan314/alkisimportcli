@@ -51,7 +51,7 @@ SELECT
 	o.advstandardmodell||o.sonstigesmodell||
 	p.advstandardmodell||p.sonstigesmodell AS modell
 FROM ax_grenzpunkt p
-JOIN ax_punktortau o ON ARRAY[p.gml_id] <@ o.istteilvon AND o.endet IS NULL
+JOIN ax_punktortau o ON p.gml_id = ANY(o.istteilvon) AND o.endet IS NULL
 WHERE abmarkung_marke<>9500 AND p.endet IS NULL;
 */
 
@@ -93,6 +93,6 @@ SELECT
 FROM ax_grenzpunkt p
 JOIN po_punktortta_istteilvon itv ON p.gml_id=itv.istteilvon
 JOIN ax_punktortta o ON itv.gml_id=o.gml_id AND o.endet IS NULL
-LEFT OUTER JOIN ap_pto t ON ARRAY[p.gml_id] <@ t.dientzurdarstellungvon AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[p.gml_id] <@ d.dientzurdarstellungvon AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON p.gml_id = ANY(t.dientzurdarstellungvon) AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON p.gml_id = ANY(d.dientzurdarstellungvon) AND d.endet IS NULL
 WHERE coalesce(besonderePunktnummer,'')<>'' AND p.endet IS NULL;

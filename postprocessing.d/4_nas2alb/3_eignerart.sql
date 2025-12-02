@@ -91,7 +91,7 @@ INSERT INTO eignerart(flsnr,bestdnr,bvnr,b,anteil,auftlnr,sa,ff_entst,ff_stand,l
                                         bs.laufendenummer AS auftrlnr,
                                         bb.blattart
                                 FROM eignerart ea
-                                JOIN ax_buchungsstelle bs ON ARRAY[ea.gml_id] <@ bs.an
+                                JOIN ax_buchungsstelle bs ON ea.gml_id = ANY(bs.an)
                                 JOIN ax_buchungsblatt bb ON bb.gml_id=bs.istbestandteilvon AND bb.endet IS NULL
                         )
                 SELECT

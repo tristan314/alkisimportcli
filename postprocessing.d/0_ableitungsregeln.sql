@@ -277,7 +277,7 @@ BEGIN
 		SELECT
 			(st_dump(st_multi(ax_flurstueck.wkb_geometry))).geom
 		FROM ax_flurstueck
-		JOIN ax_lagebezeichnungohnehausnummer loh ON ARRAY[loh.gml_id] <@ ax_flurstueck.zeigtAuf
+		JOIN ax_lagebezeichnungohnehausnummer loh ON loh.gml_id = ANY(ax_flurstueck.zeigtAuf)
 		WHERE loh.land=p_land AND loh.regierungsbezirk=p_regierungsbezirk AND loh.kreis=p_kreis AND loh.gemeinde=p_gemeinde AND loh.lage=p_lage
 		  AND loh.unverschluesselt IS NULL
 	) AS fs

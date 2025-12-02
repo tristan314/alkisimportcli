@@ -64,8 +64,8 @@ SELECT
 	coalesce(d.signaturnummer,p.signaturnummer,'3336') AS signaturnummer,
 	coalesce(p.advstandardmodell||p.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_bauteil o
-LEFT OUTER JOIN ap_ppo p ON ARRAY[o.gml_id] <@ p.dientzurdarstellungvon AND p.art='BAT' AND p.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='BAT' AND d.endet IS NULL
+LEFT OUTER JOIN ap_ppo p ON o.gml_id = ANY(p.dientzurdarstellungvon) AND p.art='BAT' AND p.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='BAT' AND d.endet IS NULL
 WHERE bauart=2100 AND o.endet IS NULL;
 
 -- Gebäudeteildachform
@@ -96,8 +96,8 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_bauteil o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='DAF' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='DAF' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='DAF' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='DAF' AND d.endet IS NULL
 WHERE NOT dachform IS NULL AND o.endet IS NULL;
 
 -- Gebäudeteil, oberirdische Geschosse
@@ -112,8 +112,8 @@ SELECT
 	drehwinkel, horizontaleausrichtung, vertikaleausrichtung, skalierung, fontsperrung,
 	coalesce(t.advstandardmodell||t.sonstigesmodell,o.advstandardmodell||o.sonstigesmodell) AS modell
 FROM ax_bauteil o
-LEFT OUTER JOIN ap_pto t ON ARRAY[o.gml_id] <@ t.dientzurdarstellungvon AND t.art='AOG' AND t.endet IS NULL
-LEFT OUTER JOIN ap_darstellung d ON ARRAY[o.gml_id] <@ d.dientzurdarstellungvon AND d.art='AOG' AND d.endet IS NULL
+LEFT OUTER JOIN ap_pto t ON o.gml_id = ANY(t.dientzurdarstellungvon) AND t.art='AOG' AND t.endet IS NULL
+LEFT OUTER JOIN ap_darstellung d ON o.gml_id = ANY(d.dientzurdarstellungvon) AND d.art='AOG' AND d.endet IS NULL
 WHERE NOT anzahlderoberirdischengeschosse IS NULL AND o.endet IS NULL;
 
 -- Besondere Gebäudelinien
@@ -126,7 +126,7 @@ SELECT
 	2305 AS signaturnummer,
 	advstandardmodell||sonstigesmodell
 FROM ax_besonderegebaeudelinie
-WHERE ARRAY[1000] <@ beschaffenheit AND endet IS NULL;
+WHERE 1000 = ANY(beschaffenheit) AND endet IS NULL;
 
 INSERT INTO po_lines(gml_id,thema,layer,line,signaturnummer,modell)
 SELECT
@@ -137,7 +137,7 @@ SELECT
 	2302 AS signaturnummer,
 	advstandardmodell||sonstigesmodell
 FROM ax_besonderegebaeudelinie
-WHERE ARRAY[4000] <@ beschaffenheit AND endet IS NULL;
+WHERE 4000 = ANY(beschaffenheit) AND endet IS NULL;
 
 INSERT INTO po_lines(gml_id,thema,layer,line,signaturnummer,modell)
 SELECT

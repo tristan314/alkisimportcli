@@ -26,7 +26,7 @@ SELECT
 FROM ax_besondereflurstuecksgrenze o
 JOIN ax_flurstueck a ON o.wkb_geometry && a.wkb_geometry AND st_intersects(o.wkb_geometry,a.wkb_geometry) AND a.endet IS NULL
 JOIN ax_flurstueck b ON o.wkb_geometry && b.wkb_geometry AND st_intersects(o.wkb_geometry,b.wkb_geometry) AND b.endet IS NULL
-WHERE ARRAY[1000] <@ artderflurstuecksgrenze AND a.ogc_fid<b.ogc_fid AND o.endet IS NULL;
+WHERE 1000 = ANY(artderflurstuecksgrenze) AND a.ogc_fid<b.ogc_fid AND o.endet IS NULL;
 
 -- Nicht festgestellte Grenze
 INSERT INTO po_lines(gml_id,thema,layer,line,signaturnummer,modell)
