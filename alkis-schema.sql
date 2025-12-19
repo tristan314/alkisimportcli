@@ -16611,7 +16611,7 @@ CREATE TABLE ax_bodenschaetzung (
   bodenzahlodergruenlandgrundzahl character varying,
   entstehungsartoderklimastufewasserverhaeltnisse integer[],
   jahreszahl integer,
-  kulturart integer NOT NULL,
+  kulturart integer,
   statement character varying,
   processstep_ax_li_processstep_mitdatenerhebung_description character varying[],
   processstep_rationale character varying[],

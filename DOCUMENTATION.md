@@ -4,13 +4,14 @@
 
 1. [Overview](#overview)
 2. [Installation](#installation)
-3. [Configuration Reference](#configuration-reference)
-4. [Import Process](#import-process)
-5. [Database Schema](#database-schema)
-6. [Key Views and Tables](#key-views-and-tables)
-7. [macOS Modifications](#macos-modifications)
-8. [Troubleshooting](#troubleshooting)
-9. [Advanced Usage](#advanced-usage)
+3. [Available Scripts](#available-scripts)
+4. [Configuration Reference](#configuration-reference)
+5. [Import Process](#import-process)
+6. [Database Schema](#database-schema)
+7. [Key Views and Tables](#key-views-and-tables)
+8. [macOS Modifications](#macos-modifications)
+9. [Troubleshooting](#troubleshooting)
+10. [Advanced Usage](#advanced-usage)
 
 ---
 
@@ -68,6 +69,71 @@ git clone https://github.com/tristan314/alkisimportcli.git
 cd alkisimport
 chmod +x *.sh
 ```
+
+---
+
+## Available Scripts
+
+This project includes several shell scripts for different purposes:
+
+### alkis-import-wrapper.sh (Recommended)
+
+**Purpose:** User-friendly wrapper with interactive prompts and safety checks.
+
+```bash
+./alkis-import-wrapper.sh config.txt        # Normal mode
+./alkis-import-wrapper.sh -v config.txt     # Verbose mode with debug output
+```
+
+**Features:**
+- Checks if database and schema exist
+- Prompts before overwriting existing data
+- Creates schema automatically if needed
+- Sets up permissions
+- Shows import summary with row counts
+
+**Use this when:** You want a guided, safe import experience.
+
+### alkis-import-macos.sh
+
+**Purpose:** Core import script adapted for macOS. Direct execution without interactive prompts.
+
+```bash
+./alkis-import-macos.sh config.txt
+```
+
+**Features:**
+- Runs the full import pipeline
+- No interactive prompts
+- Suitable for scripting/automation
+
+**Use this when:** You want to automate imports or run from scripts without user interaction.
+
+### alkis-import.sh
+
+**Purpose:** Original Linux import script (not macOS compatible).
+
+**Use this when:** You're running on Linux. Do not use on macOS.
+
+### alkisImport.py
+
+**Purpose:** Python-based import alternative.
+
+```bash
+python3 alkisImport.py --help
+```
+
+**Use this when:** You prefer Python or need more programmatic control.
+
+### Script Comparison
+
+| Feature | wrapper.sh | macos.sh | import.sh | Import.py |
+|---------|------------|----------|-----------|-----------|
+| macOS compatible | Yes | Yes | No | Yes |
+| Interactive prompts | Yes | No | No | No |
+| Auto-create schema | Yes | No | No | No |
+| Safety checks | Yes | No | No | No |
+| Best for | Daily use | Automation | Linux | Scripting |
 
 ---
 
@@ -389,6 +455,51 @@ You can import multiple datasets into separate schemas:
 # Second dataset (different schema in config)
 ./alkis-import-wrapper.sh config_region2.txt
 ```
+
+### Running Parallel Imports
+
+You can run multiple import instances simultaneously on different schemas in the same database. Each import is isolated to its own schema.
+
+**Step 1:** Create separate config files for each region:
+
+**config_darmstadt.txt:**
+```
+PG:dbname=ALKIS user=data password=data host=localhost
+schema he_darmstadt
+epsg 25832
+create
+/path/to/darmstadt.xml
+jobs 2
+```
+
+**config_kassel.txt:**
+```
+PG:dbname=ALKIS user=data password=data host=localhost
+schema he_kassel
+epsg 25832
+create
+/path/to/kassel.xml
+jobs 2
+```
+
+**Step 2:** Run imports in separate terminal windows:
+
+```bash
+# Terminal 1
+./alkis-import-wrapper.sh config_darmstadt.txt
+
+# Terminal 2
+./alkis-import-wrapper.sh config_kassel.txt
+
+# Terminal 3
+./alkis-import-wrapper.sh config_frankfurt.txt
+```
+
+**Important considerations:**
+- Keep `jobs` lower (2-4) per instance to avoid overloading CPU/database
+- Total concurrent jobs across all instances should not exceed your CPU cores
+- Each schema is completely independent
+- Monitor system resources with `htop` or Activity Monitor
 
 ### Cleaning a Schema
 

@@ -5,3 +5,11 @@ alkisImportDlg.py
 *.log
 *.xml
 *.zip
+
+# Config files (may contain passwords)
+*config*.txt
+config.txt
+alkis_config.txt
+
+# macOS
+.DS_Store
