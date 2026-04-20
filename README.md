@@ -9,6 +9,8 @@ A macOS-compatible fork of [norGIS ALKIS Import](https://github.com/norBIT/alkis
 - Create ownership views (`v_eigentuemer`) linking parcels to owners
 - Parallel processing support for faster imports
 - Progress tracking and logging
+- Optional `labels off` switch to skip the slow presentation-table
+  derivation (`po_labels`, `po_polygons`, …) for tabular-only imports
 
 ## Requirements
 
@@ -42,25 +44,27 @@ brew install bash parallel gdal
 
 ### 3. Configure Import
 
-Create a configuration file (e.g., `my_config.txt`):
+Copy the provided template and fill in the placeholders:
+
+```bash
+cp config.txt my_config.txt
+# then edit my_config.txt
+```
+
+`config.txt` is a fully documented template covering every directive
+(connection, schema, EPSG, data files, parallelism, toggles such as
+`labels`/`historie`/`avoiddupes`, backup/restore, logging). See
+[DOCUMENTATION.md](DOCUMENTATION.md#configuration-reference) for the
+full reference.
+
+Minimal config:
 
 ```
-# Database connection
 PG:dbname=alkis_import user=your_user password=your_password host=localhost
-
-# Schema name
 schema my_schema
-
-# Coordinate system (EPSG code)
 epsg 25833
-
-# Initialize schema (required for v_eigentuemer view)
 create
-
-# Data files to import
 /path/to/your/data.xml
-
-# Optional: parallel jobs
 jobs 4
 ```
 
