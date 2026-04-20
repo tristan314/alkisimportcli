@@ -369,6 +369,21 @@ fi
 
 print_success "Post-import fixes applied"
 
+# Re-run nas2alb postprocessing to ensure flurst/eigner/v_eigentuemer are fully populated
+echo ""
+echo "Refreshing ownership tables (flurst, eigner, etc.)..."
+for f in "$SCRIPT_DIR/postprocessing.d/4_nas2alb/"*.sql; do
+    if [ -f "$f" ]; then
+        print_debug "Running: $f"
+        psql $PSQL_BASE -d "$DB_NAME" \
+            -v alkis_schema="$SCHEMA_NAME" \
+            -v parent_schema=public \
+            -v postgis_schema=public \
+            -q -f "$f" 2>/dev/null || true
+    fi
+done
+print_success "Ownership tables refreshed"
+
 # Show summary
 echo ""
 echo -e "${GREEN}========================================${NC}"

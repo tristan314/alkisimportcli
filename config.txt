@@ -1,0 +1,136 @@
+# ============================================================================
+#  ALKIS Import — configuration template
+# ============================================================================
+#  Syntax:
+#    - One directive per line.
+#    - Lines starting with '#' and blank lines are ignored.
+#    - Boolean directives accept:  on | off | true | false | yes | no | an | aus
+#    - Directives are processed IN ORDER. Put connection, schema, epsg,
+#      and toggles BEFORE 'create' and before any data files.
+# ============================================================================
+
+
+# --- Database connection ----------------------------------------------------
+# PostgreSQL connection string. Must come before any DB-touching directive.
+PG:dbname=[DATABASE NAME] user=[USER] password=[PASSWORD] host=[HOST]
+
+
+# --- Target schema ----------------------------------------------------------
+# Schema that will hold the ALKIS tables (ax_*, eigner, v_eigentuemer, ...).
+schema [SCHEMA NAME]
+
+# Schema in which the PostGIS extension is installed.
+#pgschema public
+
+# Inherit an existing schema (child schema reuses parent tables via INHERITS).
+#inherit parent_schema_name
+
+
+# --- Coordinate system ------------------------------------------------------
+# EPSG code of the input data.
+#   25832 = UTM 32N (BW, BY, HB, HE, HH, NI, NW, RP, SH, SL)
+#   25833 = UTM 33N (BB, BE, MV, SN, ST, TH)
+epsg [EPSG CODE]
+
+# Reproject input into the EPSG above (only needed if source CRS differs).
+#transform off
+
+
+# --- Pipeline commands ------------------------------------------------------
+# Initialize the schema: drops & recreates tables, runs postcreate.d/,
+# creates the v_eigentuemer view. REQUIRED on first import.
+create
+
+# Apply incremental NAS updates to an existing schema (alternative to create).
+#update
+
+# Empty all ALKIS tables in the schema (keeps the schema and structure).
+#clean
+
+
+# --- Source data ------------------------------------------------------------
+# One NAS file per line. Supported: .xml, .xml.gz, .zip
+[PATH TO NAS FILE]
+#[PATH TO ANOTHER NAS FILE]
+
+
+# --- Parallelism ------------------------------------------------------------
+# Parallel workers for ogr2ogr and postprocessing SQL scripts.
+# -1 = auto (one per CPU core). Default: -1.
+# Recomended: 8 Parallel Jobs
+jobs [NUMBER OF PARALLEL JOBS]
+
+
+# --- Behavior toggles -------------------------------------------------------
+
+# Build presentation tables for map rendering (po_labels, po_polygons, ...).
+# off = skip postprocessing.d/[012]_ableitungsregeln* (MUCH faster; no
+# labelled ALKIS map in QGIS). Tabular data (ax_*, eigner, v_eigentuemer)
+# is unaffected. Default: on.
+#labels off
+
+# Keep historical NAS objects (endet IS NOT NULL) in the database.
+# Default: on.
+historie on
+
+# Deduplicate incoming features via INSERT ... ON CONFLICT.
+# Default: on.
+#avoiddupes on
+
+# Bulk-load with COPY instead of INSERT. Faster, but a single bad feature
+# aborts the whole batch. Default: off.
+#usecopy off
+
+# Handle Flurstücksnummern-Bruch (numerator/denominator parcel numbers).
+# Default: on.
+#fnbruch on
+
+# "Verdrängen": overwrite existing objects on conflict instead of skipping.
+# Default: off.
+#pgverdraengen off
+
+# Write a Quittierung (acknowledgement XML) for each processed NAS delivery.
+# Default: off.
+#quittierung off
+
+
+# --- Backup / restore -------------------------------------------------------
+# pg_dump -Fc the target schema after import. Arg is strftime basename;
+# omit for default  alkis-%Y-%m-%d-%H-%M .
+#dump backup-%Y-%m-%d
+
+# Restore a previous dump (basename without the .backup suffix).
+#restore [BACKUP BASENAME]
+
+
+# --- Logging & tracing ------------------------------------------------------
+# Mirror all output to a log file.
+# Bare 'log' = <configname>-YYYY-MM-DD-HH-MM.log
+#log
+
+# GDAL debug flag (forwarded to CPL_DEBUG). Use "ON" or a comma-separated
+# list of driver names, e.g. "NAS,GML".
+#debug ON
+
+# Temporary directory for job list / progress file. Created if missing;
+# contents are wiped at start.
+#temp /tmp/alkis
+
+
+# --- Advanced (rarely needed) -----------------------------------------------
+# Extra options passed to every ogr2ogr invocation.
+#options -oo GML_FEATURE_COLLECTION=YES
+
+# Regex of error messages to tolerate during import.
+#skipfailuresregex ^ERROR 1:.*duplicate key.*
+
+# Run a single SQL statement at this position in the pipeline.
+#execute VACUUM ANALYZE;
+
+# Run an arbitrary shell command at this position in the pipeline.
+#shell echo "phase reached at $(date)"
+
+
+# --- End-of-file marker -----------------------------------------------------
+# 'exit' or 'postprocess' stops reading further lines (useful for testing).
+#exit

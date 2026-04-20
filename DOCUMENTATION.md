@@ -157,6 +157,7 @@ Create a configuration file with the following options:
 |--------|-------------|---------|
 | `jobs N` | Number of parallel import jobs | 1 |
 | `debug` | Enable verbose logging | disabled |
+| `labels on\|off` | Build presentation tables (`po_labels`, `po_polygons`, …) for map rendering. Turn off for purely tabular/analytical use — skips `postprocessing.d/[012]_ableitungsregeln*` and saves significant import time. | on |
 
 ### EPSG Codes for German States
 
@@ -390,6 +391,26 @@ export PATH="/Applications/Postgres.app/Contents/Versions/17/bin:$PATH"
 ```
 
 Or use full path in wrapper script.
+
+#### Postprocessing skipped / import aborts silently after data import
+
+**Cause:** macOS `._` (AppleDouble) resource fork files in your config. These are invisible metadata files that macOS creates on non-HFS+ volumes (exFAT, NTFS). They are 4096-byte binary files, not valid XML. When ogr2ogr fails on them, `parallel --halt soon,fail=1` returns non-zero, and `set -e` causes `alkis-import-macos.sh` to exit before postprocessing runs.
+
+**Symptoms:**
+- No postprocessing output in the log (no `SQL RUN: postprocessing.d/...`)
+- No `FINAL:` or `END` line from the main script
+- Data was imported (e.g. `ax_flurstueck` has rows) but derived tables are not populated
+
+**Solution:** Remove `._` files from your config and optionally from disk:
+```bash
+# Clean config file
+grep -v '/\._' config.txt > config_clean.txt
+
+# Remove ._ files from disk (safe - only macOS metadata)
+dot_clean /path/to/your/alkis/data
+# or
+find /path/to/your/alkis/data -name '._*' -delete
+```
 
 #### Permission errors on schema
 

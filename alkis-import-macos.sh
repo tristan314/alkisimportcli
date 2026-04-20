@@ -52,6 +52,7 @@ export PARENTSCHEMA=
 export PGSCHEMA=public
 export USECOPY=NO
 export TRANSFORM=false
+export LABELS=true
 export PG_MAJOR=
 export PG_MINOR=
 
@@ -126,9 +127,14 @@ export -f unlock
 
 rund() {
 	local dir=$1
+	local skip=${2:-}
 
 	if [ -d "$dir.d" ]; then
 		for i in $(ls -1d ${dir}.d/* 2>|/dev/null | sort); do
+			if [ -n "$skip" ] && [[ "${i##*/}" == $skip ]]; then
+				echo "SKIP $i"
+				continue
+			fi
 			if [ -d "$i" ]; then
 				ls -1 $i/*.sql 2>|/dev/null | sort | parallel --line-buffer --halt soon,fail=1 --jobs=$JOBS sql
 			elif [[ -f "$i" && -r "$i" && "$i" =~ \.sql$ ]]; then
@@ -810,6 +816,24 @@ EOF
 		continue
 		;;
 
+	"labels "*)
+		LABELS=${src#labels }
+		case "${LABELS,,}" in
+		an|on|true|yes)
+			LABELS=true
+			;;
+		aus|off|false|no)
+			LABELS=false
+			;;
+		*)
+			echo "$P: Ungültiger Wert $LABELS (true oder false erwartet)" >&2
+			exit 1
+			;;
+		esac
+
+		continue
+		;;
+
 
 	"epsg "*)
 		EPSG=${src#epsg }
@@ -1076,7 +1100,13 @@ elif [ "$src" != "exit" ]; then
 	fi
 
 	if (( preprocessed != 0 )); then
-		if ! rund postprocessing; then
+		if [ "$LABELS" = "true" ]; then
+			ppskip=
+		else
+			ppskip='[012]_ableitungsregeln*'
+			echo "LABELS=off: Ableitungsregeln (Präsentationstabellen) werden übersprungen."
+		fi
+		if ! rund postprocessing "$ppskip"; then
 			echo "FEHLER BEIM POSTPROCESSING"
 			src=error
 		fi
